@@ -1,0 +1,32 @@
+AppBundle\Entity\YaUser:
+    type: entity
+    table: ya_user
+    id:
+        uid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        account:
+            type: string
+            nullable: false
+            length: 200
+            options:
+                fixed: false
+        passwd:
+            type: string
+            nullable: false
+            length: 64
+            options:
+                fixed: false
+        nickname:
+            type: string
+            nullable: false
+            length: 200
+            options:
+                fixed: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,47 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * YaUser
+ *
+ * @ORM\Table(name="ya_user")
+ * @ORM\Entity
+ */
+class YaUser
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="uid", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $uid;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="account", type="string", length=200, nullable=false)
+     */
+    private $account;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="passwd", type="string", length=64, nullable=false)
+     */
+    private $passwd;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nickname", type="string", length=200, nullable=false)
+     */
+    private $nickname;
+
+
+}
+

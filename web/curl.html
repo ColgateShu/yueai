@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+<head>
+   <meta charset="utf-8">
+<title></title>	
+<style>
+body>div{
+	min-height:30px;
+}
+.cs {
+	padding:10px;
+	margin:10px;
+	border:1px solid #ccc;
+	line-height:30px;
+}
+.cs_name, .auth_n {
+	width:100px;
+}
+#retcontent {
+	padding:10px;
+	color:#444;
+	background-color: beige;
+	margin: 10px;
+    border-radius: 5px;
+    line-height: 24px;
+}
+#url {
+	height:30px;
+	line-height:30px;
+	width:30%;
+	padding:0px 10px;
+	border-radius:5px;
+}
+</style>
+</head>
+<body>
+<form>
+<hr />
+<div>
+	地址：<input id="url" value="/">
+</div>
+<hr />
+<div class="cs">
+	<div><input class="cs_name" placeholder="参数名" value="token" /> : <input class="cs_value auth_v" placeholder="参数值" value="" /></div>
+	<div><input class="cs_name" placeholder="参数名" /> : <input class="cs_value" placeholder="参数值" /></div>
+</div>
+<input type="button" class="plus" value="＋">
+<input type="submit" class="submit" value="提交">
+<div class="data">
+</div>
+<hr />
+返回结果：
+<div id="retcontent">
+</div>
+</form>
+</body>
+</html>
+<script src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/js/lib/jquery-1.10.2_d88366fd.js"></script>
+<script>
+$(function(){
+
+
+	$('.auth_v').val(getCookie("auth"));
+	if(getCookie("_url")){
+		$('#url').val(getCookie("_url"));
+	}
+	var cs_tag = '<div><input class="cs_name" placeholder="参数名" /> : <input class="cs_value" placeholder="参数值" /></div>';
+	$('.plus').click(function(){
+		$('.cs').append(cs_tag).find('div:last input:first').focus();
+	});
+	$('.submit').click(function(){
+		$('#retcontent').html('');
+		
+		var _data = {};
+		$('.cs div').each(function(e){
+			var name = $(this).find('input').eq(0).val();
+			var value = $(this).find('input').eq(1).val();
+			if(name!=''||value!=''){
+				_data[name] = value;
+			}
+		});
+		//_data.age = {max:26, min:18};
+		//_data.address = {province:11, city:124};
+		//_data = {"username":"13582318909","nickname":"gahvdbd1","passwd":"qwertyuiop","sex":1,"birth":{"year":113,"month":11,"day":30},"address":{"province":2,"city":410},"spend":1};
+		var _url = $('#url').val();
+		setCookie('_url', _url);
+		if(_url != '/'){
+			console.log(_url);
+			$.post(_url, JSON.stringify(_data), function(res){
+				if(typeof(res.code)=='undefined'){
+					$('#retcontent').html(res);
+				}else{
+					if(typeof(res.auth)!='undefined'){
+						setCookie('auth', res.auth);
+					}
+					//$('#retcontent').html(JSON.stringify(res));
+					$('#retcontent').html("<pre>"+format(JSON.stringify(res))+"</pre>");
+					
+				}
+			});
+		}
+		return false;
+	});
+});
+
+function setCookie(name,value){
+	var Days = 30;
+	var exp = new Date();
+	exp.setTime(exp.getTime() + Days*24*60*60*1000);
+	document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+}
+function getCookie(name)
+{
+	var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+	if(arr=document.cookie.match(reg))
+	return unescape(arr[2]);
+	else
+	return null;
+}
+function format(txt,compress/*是否为压缩模式*/){/* 格式化JSON源码(对象转换为JSON文本) */  
+        var indentChar = '    ';   
+        if(/^\s*$/.test(txt)){   
+            alert('数据为空,无法格式化! ');   
+            return;   
+        }   
+        try{var data=eval('('+txt+')');}   
+        catch(e){   
+            alert('数据源语法错误,格式化失败! 错误信息: '+e.description,'err');   
+            return;   
+        };   
+        var draw=[],last=false,This=this,line=compress?'':'\n',nodeCount=0,maxDepth=0;   
+           
+        var notify=function(name,value,isLast,indent/*缩进*/,formObj){   
+            nodeCount++;/*节点计数*/  
+            for (var i=0,tab='';i<indent;i++ )tab+=indentChar;/* 缩进HTML */  
+            tab=compress?'':tab;/*压缩模式忽略缩进*/  
+            maxDepth=++indent;/*缩进递增并记录*/  
+            if(value&&value.constructor==Array){/*处理数组*/  
+                draw.push(tab+(formObj?('"'+name+'":'):'')+'['+line);/*缩进'[' 然后换行*/  
+                for (var i=0;i<value.length;i++)   
+                    notify(i,value[i],i==value.length-1,indent,false);   
+                draw.push(tab+']'+(isLast?line:(','+line)));/*缩进']'换行,若非尾元素则添加逗号*/  
+            }else   if(value&&typeof value=='object'){/*处理对象*/  
+                    draw.push(tab+(formObj?('"'+name+'":'):'')+'{'+line);/*缩进'{' 然后换行*/  
+                    var len=0,i=0;   
+                    for(var key in value)len++;   
+                    for(var key in value)notify(key,value[key],++i==len,indent,true);   
+                    draw.push(tab+'}'+(isLast?line:(','+line)));/*缩进'}'换行,若非尾元素则添加逗号*/  
+                }else{   
+                        if(typeof value=='string')value='"'+value+'"';   
+                        draw.push(tab+(formObj?('"'+name+'":'):'')+value+(isLast?'':',')+line);   
+                };   
+        };   
+        var isLast=true,indent=0;   
+        notify('',data,isLast,indent,false);   
+        return draw.join('');   
+    }  
+</script>

@@ -1,0 +1,15 @@
+acme_smscode:
+    resource: "@AcmeSmscodeBundle/Controller/"
+    type:     annotation
+    prefix:   /sms
+
+app:
+    resource: "@AppBundle/Controller"
+    type:     annotation
+    prefix:   /
+
+register:
+    resource: "@RegisterBundle/Controller"
+    type:     annotation
+    prefix:		/reg
+

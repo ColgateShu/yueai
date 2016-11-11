@@ -1,0 +1,42 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/book/service_container.html
+parameters:
+#    parameter_name: value
+#CURLOPT_SSL_VERIFYHOST
+    ssl_host:       81
+#CURLOPT_SSL_VERIFYPEER
+    ssl_verify:     64
+
+services:
+    request:
+        class:      Symfony\Component\HttpFoundation\Request
+    input:
+        class:      AppBundle\Controller\InputController
+        arguments:  ['@request']
+    base:
+        class:      AppBundle\Controller\BaseController
+    app.request_listener:
+        class:      AppBundle\EventListener\RequestListener
+        tags:
+            - {name: kernel.event_listener, event: kernel.request}
+
+    redis:
+        class:      Predis\Client
+        arguments:  [%redis%]
+
+    help:
+        class:      Acme\HelpBundle\Controller\HelpController
+        calls:
+            - [setRedis, ['@redis']]
+
+    curl:
+        class:      Curl\Curl
+        calls:
+            - [setOpt, ['%ssl_host%', false]]
+            - [setOpt, ['%ssl_verify%', false]]
+
+    appbundle.tblprefix_subscriber:
+        class:      AppBundle\Subscriber\TablePrefixSubscriber
+        arguments:  [%Appbundle.db.table_prefix%]
+        tags:
+            - { name: doctrine.event_subscriber }
